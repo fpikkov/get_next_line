@@ -13,7 +13,7 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 2
+#  define BUFFER_SIZE 10
 # endif
 # include <unistd.h>
 # include <stdlib.h>
@@ -26,12 +26,14 @@ typedef struct s_list
 }				t_list;
 
 t_list	*new_list(void);
-void	buff_to_list(char *content, char *buffer);
+void    append_list(t_list **head, char *content);
 t_list	*last_list(t_list **head);
-int		find_nl(char *content);
+int		find_nl(t_list **head);
 int		store_buff(t_list **head, int fd);
 int		line_len(t_list **head);
 char	*next_line(t_list **head);
+void    free_list(t_list **head);
+char    *fetch_remainder(t_list **head);
 void	clear_list(t_list **head);
 char	*get_next_line(int fd);
 
