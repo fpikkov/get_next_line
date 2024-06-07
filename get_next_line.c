@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 18:26:57 by fpikkov           #+#    #+#             */
-/*   Updated: 2024/05/31 21:03:42 by fpikkov          ###   ########.fr       */
+/*   Updated: 2024/06/07 20:12:34 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_list	*new_list(void)
 	list->content = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!list->content)
 	{
-		free(list);	
+		free(list);
 		return (NULL);
 	}
 	return (list);
@@ -56,38 +56,6 @@ void	append_list(t_list **head, char *content)
 		last->next = list;
 }
 
-// Returns the last node in the linked list
-t_list	*last_list(t_list **head)
-{
-	t_list	*temp;
-
-	if (!(*head))
-		return (NULL);
-	temp = *head;
-	while (temp->next != NULL)
-		temp = temp->next;
-	return (temp);
-}
-
-int	find_nl(t_list **head)
-{
-	t_list *last;
-	int		i;
-
-	i = 0;
-	last = last_list(head);
-	if (!last)
-		return (0);
-	while (last->content[i] != '\0')
-	{
-		if (last->content[i] == '\n')
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
-// TODO check for NULL returns from new_list calls
 // Function reads from file descriptor and writes contents into a linked list
 int	store_buff(t_list **head, int fd)
 {
@@ -103,6 +71,8 @@ int	store_buff(t_list **head, int fd)
 		bytes = read(fd, buffer, BUFFER_SIZE);
 		if (bytes == -1 || (!(*head) && bytes == 0))
 		{
+			if (bytes == -1 && (*head))
+				clear_list(head, 1);
 			free(buffer);
 			return (-1);
 		}
@@ -111,35 +81,6 @@ int	store_buff(t_list **head, int fd)
 	}
 	free(buffer);
 	return (0);
-}
-
-// Finds the amount of characters to allocate until the newline character
-int	line_len(t_list **head)
-{
-	t_list	*temp;
-	int		len;
-	int		i;
-
-	len = 0;
-	if (*head == NULL)
-		return (0);
-	temp = *head;
-	while (temp != NULL)
-	{
-		i = 0;
-		while (temp->content[i] != '\0')
-		{
-			if (temp->content[i] == '\n')
-			{
-				len++;
-				break ;
-			}
-			i++;
-			len++;
-		}
-		temp = temp->next;
-	}
-	return (len);
 }
 
 // Combines node contents into a string up until the newline character
@@ -172,85 +113,29 @@ char	*next_line(t_list **head)
 	return (line);
 }
 
-void	free_list(t_list **head)
-{
-	t_list	*current;
-	t_list	*next;
-
-	current = *head;
-	next = current;
-	while (next != NULL)
-	{
-		next = current->next;
-		free(current->content);
-		free(current);
-		current = next;
-	}
-	*head = NULL;
-}
-
-char	*fetch_remainder(t_list **head)
-{	
-	t_list	*last;
-	char	*buffer;
-	int		i;
-	int		j;
-
-	last = last_list(head);
-	if (!last)
-		return (NULL);
-	i = 0;
-	while (last->content[i] != '\0' && last->content[i] != '\n')
-		i++;
-	if (last->content[i] == '\n')
-		i++;
-	if (last->content[i] == '\0')
-		return (NULL);
-	buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
-		return (NULL);
-	j = 0;
-	while (last->content[i] != '\0')
-		buffer[j++] = last->content[i++];
-	buffer[j] = '\0';
-	return (buffer);
-}
-
-void	clear_list(t_list **head)
-{
-	char	*buffer;
-
-	if (!(*head))
-		return ;
-	buffer = fetch_remainder(head);
-	free_list(head);
-	if (buffer)
-	{
-		append_list(head, buffer);
-		free(buffer);
-	}
-}
-
-// TODO clear linked list in case of failure or when finished
+// Gets next line from file descriptor
 char	*get_next_line(int fd)
 {
 	static t_list	*head = NULL;
 	char			*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) == -1)
+	{
+		if (head)
+			clear_list(&head, 1);
 		return (NULL);
+	}
 	if (store_buff(&head, fd) == -1)
 		return (NULL);
 	line = next_line(&head);
-	// TODO Clear the list
 	if (!line)
 		return (NULL);
 	if (line[0] == '\0')
 	{
 		free(line);
-		clear_list(&head);
+		clear_list(&head, 1);
 		return (NULL);
 	}
-	clear_list(&head);
+	clear_list(&head, 0);
 	return (line);
 }
