@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 18:28:01 by fpikkov           #+#    #+#             */
-/*   Updated: 2024/06/07 17:55:05 by fpikkov          ###   ########.fr       */
+/*   Updated: 2024/06/10 14:19:25 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,14 +102,16 @@ char	*fetch_remainder(t_list **head)
 }
 
 // Stores any remaining chars after newline in buffer, then frees old list
-void	clear_list(t_list **head, int err)
+// Function has a stupid return of NULL to reduce GNL's line count
+char	*clear_list(t_list **head, int err)
 {
 	char	*buffer;
 	t_list	*current;
 	t_list	*next;
 
 	if (!(*head))
-		return ;
+		return (NULL);
+	buffer = NULL;
 	if (err == 0)
 		buffer = fetch_remainder(head);
 	current = *head;
@@ -127,4 +129,5 @@ void	clear_list(t_list **head, int err)
 		append_list(head, buffer);
 		free(buffer);
 	}
+	return (NULL);
 }

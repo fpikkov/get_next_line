@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 18:23:16 by fpikkov           #+#    #+#             */
-/*   Updated: 2024/06/07 17:51:27 by fpikkov          ###   ########.fr       */
+/*   Updated: 2024/06/10 14:11:34 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int		store_buff(t_list **head, int fd);
 int		line_len(t_list **head);
 char	*next_line(t_list **head);
 char	*fetch_remainder(t_list **head);
-void	clear_list(t_list **head, int err);
+char	*clear_list(t_list **head, int err);
 char	*get_next_line(int fd);
 
 #endif

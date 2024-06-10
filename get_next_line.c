@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 18:26:57 by fpikkov           #+#    #+#             */
-/*   Updated: 2024/06/07 20:12:34 by fpikkov          ###   ########.fr       */
+/*   Updated: 2024/06/10 14:22:30 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,10 @@ void	append_list(t_list **head, char *content)
 		return ;
 	list = new_list();
 	if (!list)
+	{
+		clear_list(head, 1);
 		return ;
+	}
 	i = 0;
 	while (content[i] != '\0')
 	{
@@ -120,21 +123,16 @@ char	*get_next_line(int fd)
 	char			*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) == -1)
-	{
-		if (head)
-			clear_list(&head, 1);
-		return (NULL);
-	}
+		return (clear_list(&head, 1));
 	if (store_buff(&head, fd) == -1)
-		return (NULL);
+		return (clear_list(&head, 1));
 	line = next_line(&head);
 	if (!line)
-		return (NULL);
+		return (clear_list(&head, 1));
 	if (line[0] == '\0')
 	{
 		free(line);
-		clear_list(&head, 1);
-		return (NULL);
+		return (clear_list(&head, 1));
 	}
 	clear_list(&head, 0);
 	return (line);
