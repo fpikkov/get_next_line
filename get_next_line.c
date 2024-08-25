@@ -121,8 +121,10 @@ char	*get_next_line(int fd)
 {
 	static t_list	*head = NULL;
 	char			*line;
+	long			max_buff;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) == -1)
+	max_buff = (((1 << 30) - 1) * 2);
+	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE > max_buff)
 		return (clear_list(&head, 1));
 	if (store_buff(&head, fd) == -1)
 		return (clear_list(&head, 1));
