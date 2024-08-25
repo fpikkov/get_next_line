@@ -121,7 +121,7 @@ char	*get_next_line(int fd)
 {
 	static t_list	*head = NULL;
 	char			*line;
-	long			max_buff;
+	long long		max_buff;
 
 	max_buff = (((1 << 30) - 1) * 2);
 	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE > max_buff)
